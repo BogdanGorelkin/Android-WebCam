@@ -17,7 +17,6 @@ public class SettingsActivity extends PreferenceActivity {
     ListPreference mCameraPreference;
     ListPreference mRangePreference;
     ListPreference mStreamSizePreference;
-    ListPreference mPhotoSizePreference;
     SharedPreferences mSharedPreferences;
 
     @Override
@@ -42,7 +41,6 @@ public class SettingsActivity extends PreferenceActivity {
         
         mCameraPreference = (ListPreference) findPreference("settings_camera");
         mStreamSizePreference = (ListPreference) findPreference("settings_size");
-        mPhotoSizePreference = (ListPreference) findPreference("settings_photo_size");
         mRangePreference = (ListPreference) findPreference("settings_range");
         
         mCameraPreference.setOnPreferenceChangeListener(listener);     
@@ -67,7 +65,6 @@ public class SettingsActivity extends PreferenceActivity {
             }
         };
         mStreamSizePreference.setOnPreferenceChangeListener(listener);
-        mPhotoSizePreference.setOnPreferenceChangeListener(listener);
         mRangePreference.setOnPreferenceChangeListener(listener);
         
         String sizesKey = "preview_sizes_" + cameraIdString;
@@ -94,15 +91,6 @@ public class SettingsActivity extends PreferenceActivity {
             mStreamSizePreference.setValue(sizes[0]);
         }
         mStreamSizePreference.setSummary(mStreamSizePreference.getValue());
-
-        // Save Photo size
-        mPhotoSizePreference.setEntries(photoSizes);
-        mPhotoSizePreference.setEntryValues(photoSizes);
-        String photoSize = mPhotoSizePreference.getValue();
-        if (!photoSizeSet.contains(photoSize)) {
-            mPhotoSizePreference.setValue(photoSizes[0]);
-        }
-        mPhotoSizePreference.setSummary(mPhotoSizePreference.getValue());
         
         // Stream range
         String[] ranges = rangeSet.toArray(new String[0]);

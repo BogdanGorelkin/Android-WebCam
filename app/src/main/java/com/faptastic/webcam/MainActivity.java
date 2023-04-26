@@ -4,12 +4,14 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.TreeSet;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.hardware.Camera.Parameters;
 import android.hardware.Camera.Size;
@@ -19,6 +21,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 public class MainActivity extends Activity {
     public final String TAG = "Webcam";
@@ -31,22 +37,71 @@ public class MainActivity extends Activity {
     // Period photo upload
     private boolean mIsPhotoServiceRunning = false;
     private Button mBackgroundPhotoButton;
-    
+
+    private static final int REQUEST_CODE_PERMISSIONS = 100;
+    private static final String[] REQUIRED_PERMISSIONS = {
+            Manifest.permission.CAMERA,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
+
     SharedPreferences mSharedPreferences;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED) {
+
+            // Request permissions if not granted
+            ActivityCompat.requestPermissions(
+                    this,
+                    REQUIRED_PERMISSIONS,
+                    REQUEST_CODE_PERMISSIONS);
+        }
         
-        mBackgroundmJPEGButton = (Button) findViewById(R.id.backgroundButton);
+//        mBackgroundmJPEGButton = (Button) findViewById(R.id.backgroundButton);
         mForegroundmJPEGButton = (Button) findViewById(R.id.foregroundButton);
-        mBackgroundPhotoButton = (Button) findViewById(R.id.backgroundPhotoButton);
-        
-        if (!initialize()) {
-            Toast.makeText(this, "Can not initialize parameters", Toast.LENGTH_LONG).show();
+//        mBackgroundPhotoButton = (Button) findViewById(R.id.backgroundPhotoButton);
+
+//        if (!initialize()) {
+//            Toast.makeText(this, "Can not initialize parameters", Toast.LENGTH_LONG).show();
+//        }
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == REQUEST_CODE_PERMISSIONS) {
+            // Check if all permissions are granted
+            boolean allPermissionsGranted = true;
+            for (int grantResult : grantResults) {
+                if (grantResult != PackageManager.PERMISSION_GRANTED) {
+                    allPermissionsGranted = false;
+                    break;
+                }
+            }
+
+            if (allPermissionsGranted) {
+                if (!initialize()) {
+                    Toast.makeText(this, "Can not initialize parameters", Toast.LENGTH_LONG).show();
+                }
+            } else {
+                Toast.makeText(this,
+                        "Permissions not granted by the user.",
+                        Toast.LENGTH_SHORT).show();
+                finish();
+            }
         }
     }
+
     
     @Override
     public void onResume() {
@@ -85,38 +140,38 @@ public class MainActivity extends Activity {
             }
             startActivity(new Intent(this , ForegroundmJPEGActivity.class));
             break;
-        case R.id.backgroundButton:
-            if (mIsPhotoServiceRunning)
-                break;
-
-            if (!mIsmJPEGServiceRunning) {
-                //doBindService();
-                startService(new Intent(this, BackgroundmJPEGService.class));
-                mIsmJPEGServiceRunning = true;
-            } else {
-                //doUnbindService();
-                stopService(new Intent(this, BackgroundmJPEGService.class));
-                mIsmJPEGServiceRunning = false;
-            }
-            updateBackgroundmJPEGServiceButton(mIsmJPEGServiceRunning);
-            break;
-
-            case R.id.backgroundPhotoButton:
-                if (mIsmJPEGServiceRunning)
-                    break;
-
-                Log.i(TAG, "Background Photo Button Clicked");
-                if (!mIsPhotoServiceRunning) {
-                    //doBindService();
-                    startService(new Intent(this, BackgroundPhotoService.class));
-                    mIsPhotoServiceRunning = true;
-                } else {
-                    //doUnbindService();
-                    stopService(new Intent(this, BackgroundPhotoService.class));
-                    mIsPhotoServiceRunning = false;
-                }
-                updateBackgroundPhotoServiceButton(mIsPhotoServiceRunning);
-                break;
+//        case R.id.backgroundButton:
+//            if (mIsPhotoServiceRunning)
+//                break;
+//
+//            if (!mIsmJPEGServiceRunning) {
+//                //doBindService();
+//                startService(new Intent(this, BackgroundmJPEGService.class));
+//                mIsmJPEGServiceRunning = true;
+//            } else {
+//                //doUnbindService();
+//                stopService(new Intent(this, BackgroundmJPEGService.class));
+//                mIsmJPEGServiceRunning = false;
+//            }
+//            updateBackgroundmJPEGServiceButton(mIsmJPEGServiceRunning);
+//            break;
+//
+//            case R.id.backgroundPhotoButton:
+//                if (mIsmJPEGServiceRunning)
+//                    break;
+//
+//                Log.i(TAG, "Background Photo Button Clicked");
+//                if (!mIsPhotoServiceRunning) {
+//                    //doBindService();
+//                    startService(new Intent(this, BackgroundPhotoService.class));
+//                    mIsPhotoServiceRunning = true;
+//                } else {
+//                    //doUnbindService();
+//                    stopService(new Intent(this, BackgroundPhotoService.class));
+//                    mIsPhotoServiceRunning = false;
+//                }
+//                updateBackgroundPhotoServiceButton(mIsPhotoServiceRunning);
+//                break;
 
         }
     }
@@ -140,21 +195,21 @@ public class MainActivity extends Activity {
         }
         return false;
     }
-    
+
     private void updateBackgroundmJPEGServiceButton(boolean state) {
-        if (state) {
-            mBackgroundmJPEGButton.setText(R.string.stop_running);
-        } else {
-            mBackgroundmJPEGButton.setText(R.string.run_background);
-        }
+//        if (state) {
+//            mBackgroundmJPEGButton.setText(R.string.stop_running);
+//        } else {
+//            mBackgroundmJPEGButton.setText(R.string.run_background);
+//        }
     }
 
     private void updateBackgroundPhotoServiceButton(boolean state) {
-        if (state) {
-            mBackgroundPhotoButton.setText(R.string.stop_running);
-        } else {
-            mBackgroundPhotoButton.setText(R.string.run_background_timed_capture);
-        }
+//        if (state) {
+//            mBackgroundPhotoButton.setText(R.string.stop_running);
+//        } else {
+//            mBackgroundPhotoButton.setText(R.string.run_background_timed_capture);
+//        }
     }
     
     private boolean initialize() {

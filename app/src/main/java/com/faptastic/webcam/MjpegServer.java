@@ -114,7 +114,7 @@ public class MjpegServer extends SimpleServer {
 
     private void sendDefault(OutputStream out) throws IOException {
         String content = "<html>" +
-                "<head><title>Webcam</title></head>" +
+                "<head><title>TemmaCam</title></head>" +
                 "<body><img src='/?action=stream' alt='Camera is not available.' /></body>" +
                 "</html>";
         String header = "HTTP/1.0 200 OK\r\n" +

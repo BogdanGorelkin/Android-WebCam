@@ -18,27 +18,27 @@
         android:title="@string/port"
         android:defaultValue="8080" />
 
-    <ListPreference
-        android:key="settings_photo_size"
-        android:title="@string/photo_resolution" />
+<!--    <ListPreference-->
+<!--        android:key="settings_photo_size"-->
+<!--        android:title="@string/photo_resolution" />-->
 
-    <EditTextPreference
-        android:defaultValue="60"
-        android:key="settings_photo_frequency"
-        android:title="@string/photo_frequency"
-        android:inputType="number"       />
+<!--    <EditTextPreference-->
+<!--        android:defaultValue="60"-->
+<!--        android:key="settings_photo_frequency"-->
+<!--        android:title="@string/photo_frequency"-->
+<!--        android:inputType="number"       />-->
 
-    <EditTextPreference
-        android:defaultValue="upload.to/webcam/upload.php"
-        android:key="settings_photo_url"
-        android:title="@string/server_url" />
+<!--    <EditTextPreference-->
+<!--        android:defaultValue="upload.to/webcam/upload.php"-->
+<!--        android:key="settings_photo_url"-->
+<!--        android:title="@string/server_url" />-->
 
 
-    <EditTextPreference
-        android:defaultValue="50"
-        android:key="settings_photo_light_threshold"
-        android:title="@string/photo_light_threshold"
-        android:inputType="number"       />
+<!--    <EditTextPreference-->
+<!--        android:defaultValue="50"-->
+<!--        android:key="settings_photo_light_threshold"-->
+<!--        android:title="@string/photo_light_threshold"-->
+<!--        android:inputType="number"       />-->
 
 
 </PreferenceScreen>
