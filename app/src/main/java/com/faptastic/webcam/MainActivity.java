@@ -28,7 +28,6 @@ import androidx.core.content.ContextCompat;
 
 public class MainActivity extends Activity {
     public final String TAG = "Webcam";
-
     // JPEG Video Service
     private boolean mIsmJPEGServiceRunning = false;
     private Button mBackgroundmJPEGButton;
@@ -140,6 +139,9 @@ public class MainActivity extends Activity {
             }
             startActivity(new Intent(this , ForegroundmJPEGActivity.class));
             break;
+            case R.id.testBtn:
+                System.out.println("!!! testBtn");
+                break;
 //        case R.id.backgroundButton:
 //            if (mIsPhotoServiceRunning)
 //                break;

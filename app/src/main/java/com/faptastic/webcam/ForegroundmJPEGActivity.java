@@ -1,6 +1,11 @@
 package com.faptastic.webcam;
 
 import java.io.IOException;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.Enumeration;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
@@ -14,6 +19,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class ForegroundmJPEGActivity extends Activity implements SurfaceHolder.Callback {
@@ -38,6 +44,27 @@ public class ForegroundmJPEGActivity extends Activity implements SurfaceHolder.C
         SurfaceView surfaceView = (SurfaceView) findViewById(R.id.foregroundSurfaceView);
         SurfaceHolder surfaceHolder = surfaceView.getHolder();
         surfaceHolder.addCallback(this);
+
+        try {
+            Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
+            while (networkInterfaces.hasMoreElements()) {
+                NetworkInterface networkInterface = networkInterfaces.nextElement();
+                Enumeration<InetAddress> inetAddresses = networkInterface.getInetAddresses();
+                while (inetAddresses.hasMoreElements()) {
+                    InetAddress inetAddress = inetAddresses.nextElement();
+                    if (!inetAddress.isLoopbackAddress() && inetAddress instanceof Inet4Address) {
+                        String ipAddress = inetAddress.getHostAddress();
+                        System.out.println("IP address is: " + ipAddress);
+                        TextView ipAddressText = findViewById(R.id.ipAddress);
+                        ipAddressText.setText(ipAddress);
+                        return;
+                    }
+                }
+            }
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+
     }
     
     @Override
